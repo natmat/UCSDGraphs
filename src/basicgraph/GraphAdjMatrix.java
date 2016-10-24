@@ -20,12 +20,12 @@ public class GraphAdjMatrix extends Graph {
 
 	private final int defaultNumVertices = 5;
 	private int[][] adjMatrix;
-	
+
 	/** Create a new empty Graph */
 	public GraphAdjMatrix () {
 		adjMatrix = new int[defaultNumVertices][defaultNumVertices];
 	}
-	
+
 	/** 
 	 * Implement the abstract method for adding a vertex.
 	 * If need to increase dimensions of matrix, double them
@@ -43,7 +43,7 @@ public class GraphAdjMatrix extends Graph {
 			adjMatrix = newAdjMatrix;
 		}
 	}
-	
+
 	/** 
 	 * Implement the abstract method for adding an edge.
 	 * Allows for multiple edges between two points:
@@ -54,7 +54,7 @@ public class GraphAdjMatrix extends Graph {
 	public void implementAddEdge(int v, int w) {
 		adjMatrix[v][w] += 1;
 	}
-	
+
 	/** 
 	 * Implement the abstract method for finding all 
 	 * out-neighbors of a vertex.
@@ -74,7 +74,7 @@ public class GraphAdjMatrix extends Graph {
 		}
 		return neighbors;
 	}
-	
+
 	/** 
 	 * Implement the abstract method for finding all 
 	 * in-neighbors of a vertex.
@@ -94,7 +94,7 @@ public class GraphAdjMatrix extends Graph {
 		}
 		return inNeighbors;
 	}
-	
+
 	/** 
 	 * Implement the abstract method for finding all 
 	 * vertices reachable by two hops from v.
@@ -105,9 +105,20 @@ public class GraphAdjMatrix extends Graph {
 	 */	
 	public List<Integer> getDistance2(int v) {
 		// XXX Implement this method in week 1
-		return null;
+		List<Integer> twoHop = new ArrayList<Integer>(getNumVertices());
+		for (int one = 0 ; one < getNumVertices() ; one++) {
+			if (adjMatrix[v][one] > 0) {
+				// If there's a two-hop, then add to list
+				for (int to = 0 ; to < getNumVertices() ; to++) {
+					if (adjMatrix[one][to] > 0) {
+						twoHop.add(to);
+					}
+				}
+			}
+		}
+		return twoHop;
 	}
-	
+
 	/**
 	 * Generate string representation of adjacency matrix
 	 * @return the String
@@ -119,7 +130,7 @@ public class GraphAdjMatrix extends Graph {
 		for (int i = 0; i < dim; i ++) {
 			s += "\n\t"+i+": ";
 			for (int j = 0; j < adjMatrix[i].length; j++) {
-			s += adjMatrix[i][j] + ", ";
+				s += adjMatrix[i][j] + ", ";
 			}
 		}
 		return s;
