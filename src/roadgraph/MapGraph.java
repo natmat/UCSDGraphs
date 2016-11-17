@@ -25,7 +25,6 @@ import util.GraphLoader;
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 2
 	
-	
 	/** 
 	 * Create a new empty MapGraph 
 	 */
@@ -76,6 +75,10 @@ public class MapGraph {
 	public boolean addVertex(GeographicPoint location)
 	{
 		// TODO: Implement this method in WEEK 2
+		if (null == location) {
+			return(false);
+		}
+		
 		return false;
 	}
 	
