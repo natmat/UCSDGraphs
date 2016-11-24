@@ -1,7 +1,7 @@
 /**
  * @author UCSD MOOC development team and YOU
  * 
- * A class which reprsents a graph of geographic locations
+ * A class which represents a graph of geographic locations
  * Nodes in the graph are intersections between 
  *
  */
@@ -28,8 +28,7 @@ import util.GraphLoader;
  */
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 2
-	private Map<String, ArrayList<Edge>> graph = new HashMap<>();
-	private HashSet<Vertex> vertextSet = new HashSet<>(); 
+	private Map<Vertex, List<Edge>> mapGraph = new HashMap<>();
 	
 	/** 
 	 * Create a new empty MapGraph 
@@ -37,7 +36,7 @@ public class MapGraph {
 	public MapGraph()
 	{
 		// TODO: Implement in this constructor in WEEK 2
-		graph.clear();
+		mapGraph.clear();
 	}
 	
 	/**
@@ -47,7 +46,7 @@ public class MapGraph {
 	public int getNumVertices()
 	{
 		//TODO: Implement this method in WEEK 2
-		return(vertextSet.size());
+		return(mapGraph.keySet().size());
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class MapGraph {
 	{
 		//TODO: Implement this method in WEEK 2
 		HashSet<GeographicPoint> locationSet = new HashSet<>();
-		for (Vertex v : vertextSet) {
+		for (Vertex v : mapGraph.keySet()) {
 			locationSet.add(v.getLocation());
 		}
 		return(locationSet);
@@ -71,7 +70,11 @@ public class MapGraph {
 	public int getNumEdges()
 	{
 		//TODO: Implement this method in WEEK 2
-		return 0;
+		int count = 0;
+		for (Vertex v : mapGraph.keySet()) {
+			count += mapGraph.get(v).size();
+		}
+		return count;
 	}
 
 	
@@ -86,18 +89,13 @@ public class MapGraph {
 	public boolean addVertex(GeographicPoint location)
 	{
 		// TODO: Implement this method in WEEK 2
-		if (null == location) {
-			return(false);
-		}
+		// Attempt to add new unique location/vertex to set
+		if (null != location) {
+			return (false);
+		}		
 		
-		Vertex v = new Vertex(location);
-		if (vertextSet.contains(v)) {
-			return(false);
-		}
-		else {
-			vertextSet.add(v);
-		}
-		return(true);
+		List<Edge> rval = mapGraph.put(new Vertex(location), new ArrayList<>());
+		return (rval == null);
 	}
 	
 	/**
@@ -116,7 +114,21 @@ public class MapGraph {
 			String roadType, double length) throws IllegalArgumentException {
 
 		//TODO: Implement this method in WEEK 2
+		if ((null == from) || (null == to) 
+				|| (null == roadName) || (null == roadType) 
+				|| (!mapGraph.containsKey(new Vertex(from)) && !mapGraph.containsKey(new Vertex(to)))
+				|| (length < 0)) {
+			throw(new IllegalArgumentException());
+		}
 		
+		Edge e = new Edge(from, to, roadName, roadType, length);
+		List<Edge> edges = mapGraph.get(new Vertex(from));
+		if (!edges.contains(e)) {
+			edges.add(e);
+		}
+		else {
+			throw (new IllegalArgumentException());
+		}
 	}
 	
 
