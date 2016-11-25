@@ -116,7 +116,8 @@ public class MapGraph {
 		//TODO: Implement this method in WEEK 2
 		if ((null == from) || (null == to) 
 				|| (null == roadName) || (null == roadType) 
-				|| (!mapGraph.containsKey(new Vertex(from)) && !mapGraph.containsKey(new Vertex(to)))
+				|| !mapGraph.containsKey(new Vertex(from))
+				|| !mapGraph.containsKey(new Vertex(to))
 				|| (length < 0)) {
 			throw(new IllegalArgumentException());
 		}

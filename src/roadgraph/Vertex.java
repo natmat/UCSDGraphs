@@ -5,18 +5,21 @@ import java.util.List;
 
 import geography.GeographicPoint;
 
-class Vertex {
-	private GeographicPoint location;
+class Vertex extends GeographicPoint {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Vertex> edgeList;
 
 	public Vertex(final GeographicPoint inLocation) {
-		setLocation(inLocation);
+		super(inLocation.x, inLocation.y);
 		edgeList = new ArrayList<Vertex>();
 	}
 	
 	public void addVertex(GeographicPoint location) {
-		this.location = location;
-}
+		this(location);
+	}
 	
 	public void addEdge(final Vertex toVertex) {
 		if (!edgeList.contains(toVertex)) {
