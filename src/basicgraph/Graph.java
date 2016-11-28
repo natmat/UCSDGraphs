@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import sun.security.provider.certpath.Vertex;
 import util.GraphLoader;
 
 /**
@@ -123,10 +124,14 @@ public abstract class Graph {
 	 */
 	public List<Integer> degreeSequence() {
 		// XXX: Implement in part 1 of week 1
-		// JHNM
+		
+		// List to hold the neighbour count
 		List<Integer> out = new ArrayList<Integer>();
-		for (int v = 0 ; v <getNumVertices() ; v++) {
-			int n = getNeighbors(v).size();
+		
+		// Loop for all the vertices
+		for (int v = 0 ; v < getNumVertices() ; v++) {
+			// Count v's neighbours
+			final int n = getNeighbors(v).size();
 			out.add(n);
 		}
 		// Sort in reverse order
@@ -253,7 +258,8 @@ public abstract class Graph {
 	/** Main method provided with some basic tests. */
 	public static void main(String[] args) {
 //		GraphLoader.createIntersectionsFile("data/maps/ucsd.map", "data/intersections/ucsd.intersections");
-		GraphLoader.createIntersectionsFile("data/maps/cambridge.map", "data/intersections/cambridge.intersections");
+//		GraphLoader.createIntersectionsFile("data/maps/cambridge.map", "data/intersections/cambridge.intersections");
+		GraphLoader.createIntersectionsFile("data/testdata/simpletest.map", "data/intersections/simpletest.intersections");
 
 		// For testing of Part 1 functionality
 		// Add your tests here to make sure your degreeSequence method is

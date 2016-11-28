@@ -58,7 +58,7 @@ public class MapGraph {
 		//TODO: Implement this method in WEEK 2
 		HashSet<GeographicPoint> locationSet = new HashSet<>();
 		for (Vertex v : mapGraph.keySet()) {
-			locationSet.add(v.getLocation());
+//			locationSet.add(v.getLocation());
 		}
 		return(locationSet);
 	}
@@ -90,7 +90,7 @@ public class MapGraph {
 	{
 		// TODO: Implement this method in WEEK 2
 		// Attempt to add new unique location/vertex to set
-		if (null != location) {
+		if (null == location) {
 			return (false);
 		}		
 		
