@@ -226,6 +226,7 @@ public class GraphLoader
 		int sourceIndex;
 		int destinationIndex;
 		
+		@SuppressWarnings("unused")
 		int lineCount = 0; //for debugging
 		
 		//Initialize vertex label HashMap in graph

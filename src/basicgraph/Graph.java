@@ -2,6 +2,7 @@ package basicgraph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,15 +129,13 @@ public abstract class Graph {
 		// List to hold the neighbour count
 		List<Integer> out = new ArrayList<Integer>();
 		
-		// Loop for all the vertices
+		// For each vertex, add its neighbour count to the 'out' list
 		for (int v = 0 ; v < getNumVertices() ; v++) {
-			// Count v's neighbours
-			final int n = getNeighbors(v).size();
-			out.add(n);
+			out.add(getNeighbors(v).size() + getInNeighbors(v).size());
 		}
+		
 		// Sort in reverse order
-		Collections.sort(out);
-		Collections.reverse(out);
+		Collections.sort(out, Comparator.reverseOrder());
 		return out;
 	}
 
@@ -257,9 +256,9 @@ public abstract class Graph {
 
 	/** Main method provided with some basic tests. */
 	public static void main(String[] args) {
-//		GraphLoader.createIntersectionsFile("data/maps/ucsd.map", "data/intersections/ucsd.intersections");
+		GraphLoader.createIntersectionsFile("data/maps/ucsd.map", "data/intersections/ucsd.intersections");
 //		GraphLoader.createIntersectionsFile("data/maps/cambridge.map", "data/intersections/cambridge.intersections");
-		GraphLoader.createIntersectionsFile("data/testdata/simpletest.map", "data/intersections/simpletest.intersections");
+//		GraphLoader.createIntersectionsFile("data/testdata/simpletest.map", "data/intersections/simpletest.intersections");
 
 		// For testing of Part 1 functionality
 		// Add your tests here to make sure your degreeSequence method is
@@ -271,8 +270,11 @@ public abstract class Graph {
 		System.out.println("****");
 		System.out.println("Roads / intersections:");
 		GraphAdjList graphFromFile = new GraphAdjList();
-		GraphLoader.loadRoadMap("data/testdata/simpletest.map", graphFromFile);
+		GraphLoader.loadRoadMap("data/maps/ucsd.map", graphFromFile);
+//		GraphLoader.loadRoadMap("data/testdata/simpletest.map", graphFromFile);
 		System.out.println(graphFromFile);
+		
+		System.out.println("Max # neighbours is " + getMaxNeighbourCount(graphFromFile));
 
 		System.out.println("Observe all degrees are <= 12.");
 		System.out.println("****");
@@ -294,5 +296,14 @@ public abstract class Graph {
 		System.out.println("Testing distance-two methods on sample graphs...");
 		System.out.println("Goal: implement method using two approaches.");
 
+	}
+
+	private static int getMaxNeighbourCount(GraphAdjList graphFromFile) {
+		int vmax = 0;
+		for (int v = 0 ; v < graphFromFile.getNumVertices() ; v++) {
+			vmax = Math.max(vmax, graphFromFile.getNeighbors(v).size() + 
+					graphFromFile.getInNeighbors(v).size());
+		}
+		return vmax;
 	}
 }
