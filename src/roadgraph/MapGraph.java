@@ -7,7 +7,6 @@
  */
 package roadgraph;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +26,9 @@ import util.GraphLoader;
  *
  */
 public class MapGraph {
+	
 	//TODO: Add your member variables here in WEEK 2
-	private Map<Vertex, List<Edge>> mapGraph = new HashMap<>();
+	private static final Map<Vertex, List<Edge>> mapGraph = new HashMap<>();
 	
 	/** 
 	 * Create a new empty MapGraph 
@@ -248,7 +248,6 @@ public class MapGraph {
 		 * the Week 3 End of Week Quiz, EVEN IF you score 100% on the 
 		 * programming assignment.
 		 */
-		/*
 		MapGraph simpleTestMap = new MapGraph();
 		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
 		
@@ -277,7 +276,6 @@ public class MapGraph {
 		System.out.println("Test 3 using utc: Dijkstra should be 37 and AStar should be 10");
 		testroute = testMap.dijkstra(testStart,testEnd);
 		testroute2 = testMap.aStarSearch(testStart,testEnd);
-		*/
 		
 		
 		/* Use this code in Week 3 End of Week Quiz */
