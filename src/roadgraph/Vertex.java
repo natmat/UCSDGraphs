@@ -9,7 +9,6 @@ import geography.GeographicPoint;
 
 class Vertex extends GeographicPoint {
 	private static final long serialVersionUID = 1L;
-	private static int index;
 	private String name;
 	
 	/**
@@ -26,18 +25,8 @@ class Vertex extends GeographicPoint {
 		return name;
 	}
 
-	private List<Vertex> edgeList;
-
 	public Vertex(final GeographicPoint inLocation) {
 		super(inLocation.x, inLocation.y);
-		edgeList = new ArrayList<Vertex>();
-		index++;
-	}
-	
-	public void addEdge(final Vertex toVertex) {
-		if (!edgeList.contains(toVertex)) {
-			edgeList.add(toVertex);
-		}
 	}
 	
 	public GeographicPoint getLocation() {
