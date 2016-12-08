@@ -10,8 +10,10 @@ package roadgraph;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -161,10 +163,23 @@ public class MapGraph {
 		
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
-
-		return null;
+		
+		LinkedList<GeographicPoint> visited = new LinkedList<>();
+		LinkedList<GeographicPoint> vQueue = new LinkedList<>();
+		
+		vQueue.addFirst(start);
+		GeographicPoint cur = start;
+		
+		while (cur != goal) {
+			visited.addLast(cur);
+			cur = visited.getLast();
+			for (Edge e : mapGraph.get(new Vertex(cur))) {
+				vQueue.addFirst(e.getEndPoint());
+			}
+			cur = vQueue.getLast();
+		}
+		return visited;
 	}
-	
 
 	/** Find the path from start to goal using Dijkstra's algorithm
 	 * 
