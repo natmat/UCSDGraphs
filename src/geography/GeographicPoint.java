@@ -41,9 +41,24 @@ public class GeographicPoint extends Double {
     }
     
     public String toString()
-    {
-    	return "Lat: " + getX() + ", Lon: " + getY();
+    { 
+    	return "[" + getX() + "," + getY() + "]";
     }
-	
-	
+
+	/* (non-Javadoc)
+	 * @see java.awt.geom.Point2D#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (null == obj) return false;
+		if (getClass() != obj.getClass()) return false;
+		
+		GeographicPoint gp = (GeographicPoint)obj;
+		return ((this.x == gp.getX()) & (this.y == gp.getY()));
+	}
+
+    
 }
+
+

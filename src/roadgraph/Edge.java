@@ -7,6 +7,13 @@ class Edge {
 	private GeographicPoint end;
 	final private Boolean directed = true;
 	private String roadName;
+	/**
+	 * @return the roadName
+	 */
+	public String getRoadName() {
+		return roadName;
+	}
+
 	private String roadType;
 	private double length;
 	
