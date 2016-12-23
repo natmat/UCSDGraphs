@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import geography.GeographicPoint;
 import util.GraphLoader;
@@ -160,44 +162,54 @@ public class MapGraph {
 			GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 2
-
 		// Hook for visualization.  See write up.
 		//nodeSearched.accept(next.getLocation());
 
-		Queue<GeographicPoint> visitedList = new LinkedList<>();
-		Queue<GeographicPoint> toVisitQueue = new LinkedList<>();
-		
+		Set<GeographicPoint> visitedHashSet = new HashSet<>();
+		Queue<GeographicPoint> queue = new LinkedList<>();
+		HashMap<GeographicPoint, GeographicPoint> parentMap = new HashMap<>();
+				
 		GeographicPoint cur = start;
 
-		toVisitQueue.add(cur);
-		while (!toVisitQueue.isEmpty() && (cur != goal)) {
-			cur = toVisitQueue.remove();
-			List<Edge> neighbs = mapGraph.get(new Vertex(cur));
-			
-			System.out.println("c=" + cur);
-			
+		queue.add(cur);
+		visitedHashSet.add(cur);
+		
+		int i = 0;
+		while (!queue.isEmpty()) {
+			cur = queue.remove();
+			MyLogger.outln(i++ + ", " + cur);			
 			if (null == cur) break;
-			if (visitedList.contains(cur)) continue;
-
-			visitedList.add(cur);
+			if (cur.equals(goal)) {
+				// return parent map
+				break;
+			}
+			
+			visitedHashSet.add(cur);
 			nodeSearched.accept(cur);
 
-			System.out.print("n:");
 			for (Edge e : mapGraph.get(new Vertex(cur))) {
-				if ((!toVisitQueue.contains(e.getEndPoint()))
-						&& (!visitedList.contains(e.getEndPoint()))) {
-					toVisitQueue.add(e.getEndPoint());
-					System.out.print("+" + e.getEndPoint());
+				if (!visitedHashSet.contains(e.getEndPoint())) {
+					GeographicPoint ep = e.getEndPoint();
+					visitedHashSet.add(ep);
+					parentMap.put(ep, cur);
+					queue.add(e.getEndPoint());
+					MyLogger.out("+" + e.getRoadName() + e.getEndPoint());
+				}
+				else {
+					MyLogger.out("-" + e.getRoadName() + e.getEndPoint());
 				}
 			}
-			System.out.println();
+			MyLogger.outln("");
+			System.out.println(queue);
 		}
 		
 		if (cur.equals(goal)) {
-			System.out.println("Found goal " + goal);
+			MyLogger.outln("Found goal " + goal);
 		}
 		
-		return new ArrayList<GeographicPoint>(visitedList);
+		MyLogger.out(visitedHashSet.toString());
+		
+		return new ArrayList<GeographicPoint>(visitedHashSet);
 	}
 
 	/** Find the path from start to goal using Dijkstra's algorithm
@@ -283,19 +295,21 @@ public class MapGraph {
 		 * programming assignment.
 		 */
 		MapGraph simpleTestMap = new MapGraph();
-		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
+		List<GeographicPoint> testroute;
+		GeographicPoint testStart;
+		GeographicPoint testEnd;
 
-		GeographicPoint testStart = new GeographicPoint(1.0, 1.0);
-		GeographicPoint testEnd = new GeographicPoint(8.0, -1.0);
-
-//		System.out.println("Test 1 using simpletest: Dijkstra should be 9 and AStar should be 5");
-//		List<GeographicPoint> testroute = simpleTestMap.dijkstra(testStart,testEnd);
-//		List<GeographicPoint> testroute2 = simpleTestMap.aStarSearch(testStart,testEnd);
-
-
-		// My bfs
+//		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
+//		testStart = new GeographicPoint(1.0, 1.0);
+//		testEnd = new GeographicPoint(8.0, -1.0);
+//		System.out.println("Test NM using bfs");
+//		testroute = simpleTestMap.bfs(testStart,testEnd);
+		
+		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
+		testStart = new GeographicPoint(52.1993476,0.1273227);
+		testEnd = new GeographicPoint(52.2019205, 0.1180646);
 		System.out.println("Test NM using bfs");
-		List<GeographicPoint> testroute = simpleTestMap.bfs(testStart,testEnd);
+		testroute = simpleTestMap.bfs(testStart,testEnd);
 
 
 		// A very simple test using real data
@@ -330,5 +344,13 @@ public class MapGraph {
 		 */
 
 	}
-
+	
+	static class MyLogger {
+		public static void out(final String s) {
+			System.out.print(s);
+		}
+		public static void outln(final String s) {
+			out(s + "\n");
+		}
+	}
 }

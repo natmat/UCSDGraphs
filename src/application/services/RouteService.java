@@ -144,7 +144,7 @@ public class RouteService {
 
 
     /**
-     * Construct path including road regments
+     * Construct path including road segments
      * @param path - path with only intersections
      * @return list of LatLongs corresponding the path of route
      */
