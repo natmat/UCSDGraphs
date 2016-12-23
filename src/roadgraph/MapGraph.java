@@ -189,27 +189,35 @@ public class MapGraph {
 
 			for (Edge e : mapGraph.get(new Vertex(cur))) {
 				if (!visitedHashSet.contains(e.getEndPoint())) {
-					GeographicPoint ep = e.getEndPoint();
-					visitedHashSet.add(ep);
-					parentMap.put(ep, cur);
+					GeographicPoint endPoint = e.getEndPoint();
+					visitedHashSet.add(endPoint);
+					parentMap.put(endPoint, cur);
 					queue.add(e.getEndPoint());
-					MyLogger.out("+" + e.getRoadName() + e.getEndPoint());
+//					MyLogger.out("+" + e.getRoadName() + e.getEndPoint());
 				}
 				else {
-					MyLogger.out("-" + e.getRoadName() + e.getEndPoint());
+//					MyLogger.out("-" + e.getRoadName() + e.getEndPoint());
 				}
 			}
-			MyLogger.outln("");
-			System.out.println(queue);
+//			MyLogger.outln("");
+//			System.out.println(queue);
 		}
 		
-		if (cur.equals(goal)) {
-			MyLogger.outln("Found goal " + goal);
+		if (!cur.equals(goal)) {
+			return(null);
 		}
 		
-		MyLogger.out(visitedHashSet.toString());
+		MyLogger.outln("Found goal " + goal);
 		
-		return new ArrayList<GeographicPoint>(visitedHashSet);
+		ArrayList<GeographicPoint> route = new ArrayList<>();
+		GeographicPoint ep = goal; 
+		route.add(0, ep);
+		while (!parentMap.get(ep).equals(start)) {
+			route.add(0,parentMap.get(ep));
+			ep = parentMap.get(ep);
+		}
+		MyLogger.outln("Route: " + route.toString());
+		return(route);
 	}
 
 	/** Find the path from start to goal using Dijkstra's algorithm
