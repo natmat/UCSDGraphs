@@ -136,7 +136,82 @@ public class MapGraph {
 		}
 	}
 
+	public List<GeographicPoint> dfs(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+		Consumer<GeographicPoint> temp = (x) -> {};
+		return dfs(start, goal, temp);
+	}
 
+	public List<GeographicPoint> dfs(GeographicPoint start, 
+			GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
+	{
+		// TODO: Implement this method in WEEK 2
+		// Hook for visualization.  See write up.
+		//nodeSearched.accept(next.getLocation());
+		
+		class Stack {
+			private List<GeographicPoint> alStack = new ArrayList<>();
+			public void push(final GeographicPoint inGP) {
+				alStack.add(0, inGP);
+			}
+			public GeographicPoint pop() {
+				return(alStack.remove(0));
+			}
+			public boolean isEmpty() {
+				return(alStack.size() == 0);
+			}
+		}
+
+		Set<GeographicPoint> visitedHashSet = new HashSet<>();
+		Stack stack = new Stack();
+		HashMap<GeographicPoint, GeographicPoint> parentMap = new HashMap<>();
+				
+		GeographicPoint cur = start;
+
+		stack.push(cur);
+		visitedHashSet.add(cur);
+		
+		int i = 0;
+		while (!stack.isEmpty()) {
+			cur = stack.pop();
+			if (null == cur) break; // Didn't find goal
+			if (cur.equals(goal)) break; // Found goal
+			
+			System.out.println(i++ + ":" + cur);
+			visitedHashSet.add(cur);
+			nodeSearched.accept(cur);
+
+			for (Edge e : mapGraph.get(new Vertex(cur))) {
+				if (!visitedHashSet.contains(e.getEndPoint())) {
+					GeographicPoint endPoint = e.getEndPoint();
+					visitedHashSet.add(endPoint);
+					parentMap.put(endPoint, cur);
+					stack.push(e.getEndPoint());
+				}
+				else {
+				}
+			}
+		}
+		
+		if (!cur.equals(goal)) {
+			return(null);
+		}
+		
+		System.out.println("Found goal " + goal);
+		
+		ArrayList<GeographicPoint> route = new ArrayList<>();
+		GeographicPoint ep = goal; 
+		route.add(0, ep);
+		while (!parentMap.get(ep).equals(start)) {
+			route.add(0,parentMap.get(ep));
+			ep = parentMap.get(ep);
+		}
+		
+		System.out.println("Route: " + route.toString());
+		return(route);
+	}
+
+	
 	/** Find the path from start to goal using breadth first search
 	 * 
 	 * @param start The starting location
@@ -177,13 +252,10 @@ public class MapGraph {
 		int i = 0;
 		while (!queue.isEmpty()) {
 			cur = queue.remove();
-			MyLogger.outln(i++ + ", " + cur);			
-			if (null == cur) break;
-			if (cur.equals(goal)) {
-				// return parent map
-				break;
-			}
+			if (null == cur) break; // Didn't find goal
+			if (cur.equals(goal)) break; // Found goal
 			
+			System.out.println(i++ + ":" + cur);
 			visitedHashSet.add(cur);
 			nodeSearched.accept(cur);
 
@@ -193,21 +265,17 @@ public class MapGraph {
 					visitedHashSet.add(endPoint);
 					parentMap.put(endPoint, cur);
 					queue.add(e.getEndPoint());
-//					MyLogger.out("+" + e.getRoadName() + e.getEndPoint());
 				}
 				else {
-//					MyLogger.out("-" + e.getRoadName() + e.getEndPoint());
 				}
 			}
-//			MyLogger.outln("");
-//			System.out.println(queue);
 		}
 		
 		if (!cur.equals(goal)) {
 			return(null);
 		}
 		
-		MyLogger.outln("Found goal " + goal);
+		System.out.println("Found goal " + goal);
 		
 		ArrayList<GeographicPoint> route = new ArrayList<>();
 		GeographicPoint ep = goal; 
@@ -216,7 +284,8 @@ public class MapGraph {
 			route.add(0,parentMap.get(ep));
 			ep = parentMap.get(ep);
 		}
-		MyLogger.outln("Route: " + route.toString());
+		
+		System.out.println("Route: " + route.toString());
 		return(route);
 	}
 
@@ -313,12 +382,17 @@ public class MapGraph {
 //		System.out.println("Test NM using bfs");
 //		testroute = simpleTestMap.bfs(testStart,testEnd);
 		
+//		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
+//		testStart = new GeographicPoint(52.1993476,0.1273227);
+//		testEnd = new GeographicPoint(52.2019205, 0.1180646);
+//		System.out.println("Test NM using bfs");
+//		testroute = simpleTestMap.bfs(testStart,testEnd);
+
 		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
 		testStart = new GeographicPoint(52.1993476,0.1273227);
 		testEnd = new GeographicPoint(52.2019205, 0.1180646);
 		System.out.println("Test NM using bfs");
-		testroute = simpleTestMap.bfs(testStart,testEnd);
-
+		testroute = simpleTestMap.dfs(testStart,testEnd);
 
 		// A very simple test using real data
 //		testStart = new GeographicPoint(32.869423, -117.220917);
@@ -351,14 +425,5 @@ public class MapGraph {
 
 		 */
 
-	}
-	
-	static class MyLogger {
-		public static void out(final String s) {
-			System.out.print(s);
-		}
-		public static void outln(final String s) {
-			out(s + "\n");
-		}
-	}
+	}	
 }

@@ -29,6 +29,7 @@ import javafx.util.StringConverter;
 
 public class RouteController {
 	// Strings for slider labels
+	public static final int DFS = 4;
 	public static final int BFS = 3;
     public static final int A_STAR = 2;
     public static final int DIJ = 1;
@@ -140,6 +141,9 @@ public class RouteController {
             }
             else if(group.getSelectedToggle().getUserData().equals("BFS")) {
             	selectedToggle = BFS;
+            }
+            else if(group.getSelectedToggle().getUserData().equals("DFS")) {
+            	selectedToggle = DFS;
             }
             else {
             	System.err.println("Invalid radio button selection");

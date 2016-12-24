@@ -327,20 +327,26 @@ implements MapComponentInitializedListener {
 	private LinkedList<RadioButton> setupToggle(ToggleGroup group) {
 
 		// Use Dijkstra as default
-		RadioButton rbD = new RadioButton("Dijkstra");
-		rbD.setUserData("Dijkstra");
-		rbD.setSelected(true);
+		RadioButton rbDijkstra = new RadioButton("Dijkstra");
+		rbDijkstra.setUserData("Dijkstra");
 
-		RadioButton rbA = new RadioButton("A*");
-		rbA.setUserData("A*");
+		RadioButton rbAplus = new RadioButton("A*");
+		rbAplus.setUserData("A*");
 
-		RadioButton rbB = new RadioButton("BFS");
-		rbB.setUserData("BFS");
+		RadioButton rbBFS = new RadioButton("BFS");
+		rbBFS.setUserData("BFS");
 
-		rbB.setToggleGroup(group);
-		rbD.setToggleGroup(group);
-		rbA.setToggleGroup(group);
-		return new LinkedList<RadioButton>(Arrays.asList(rbB, rbD, rbA));
+		RadioButton rbDFS = new RadioButton("DFS");
+		rbDFS.setUserData("DFS");
+
+		rbBFS.setToggleGroup(group);
+		rbDFS.setToggleGroup(group);
+		rbDijkstra.setToggleGroup(group);
+		rbAplus.setToggleGroup(group);
+		
+		rbDFS.setSelected(true);
+		
+		return new LinkedList<RadioButton>(Arrays.asList(rbDFS, rbBFS, rbDijkstra, rbAplus));
 	}
 
 

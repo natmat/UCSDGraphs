@@ -104,12 +104,15 @@ public class RouteService {
         	}
 
         	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR ||
-        			toggle == RouteController.BFS) {
+        			toggle == RouteController.BFS || toggle == RouteController.DFS) {
         		markerManager.initVisualization();
             	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
             	List<geography.GeographicPoint> path = null;
             	if (toggle == RouteController.BFS) {
             		path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
+            	}
+            	else if (toggle == RouteController.DFS) {
+            		path = markerManager.getDataSet().getGraph().dfs(start, end, nodeAccepter);
             	}
             	else if (toggle == RouteController.DIJ) {
             		path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
