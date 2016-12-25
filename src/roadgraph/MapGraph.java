@@ -8,11 +8,14 @@
 package roadgraph;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -20,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import geography.GeographicPoint;
+import sun.awt.image.VolatileSurfaceManager;
 import util.GraphLoader;
 
 /**
@@ -148,7 +152,7 @@ public class MapGraph {
 		// TODO: Implement this method in WEEK 2
 		// Hook for visualization.  See write up.
 		//nodeSearched.accept(next.getLocation());
-		
+
 		class Stack {
 			private List<GeographicPoint> alStack = new ArrayList<>();
 			public void push(final GeographicPoint inGP) {
@@ -165,18 +169,18 @@ public class MapGraph {
 		Set<GeographicPoint> visitedHashSet = new HashSet<>();
 		Stack stack = new Stack();
 		HashMap<GeographicPoint, GeographicPoint> parentMap = new HashMap<>();
-				
+
 		GeographicPoint cur = start;
 
 		stack.push(cur);
 		visitedHashSet.add(cur);
-		
+
 		int i = 0;
 		while (!stack.isEmpty()) {
 			cur = stack.pop();
 			if (null == cur) break; // Didn't find goal
 			if (cur.equals(goal)) break; // Found goal
-			
+
 			System.out.println(i++ + ":" + cur);
 			visitedHashSet.add(cur);
 			nodeSearched.accept(cur);
@@ -192,13 +196,13 @@ public class MapGraph {
 				}
 			}
 		}
-		
+
 		if (!cur.equals(goal)) {
 			return(null);
 		}
-		
+
 		System.out.println("Found goal " + goal);
-		
+
 		ArrayList<GeographicPoint> route = new ArrayList<>();
 		GeographicPoint ep = goal; 
 		route.add(0, ep);
@@ -206,12 +210,12 @@ public class MapGraph {
 			route.add(0,parentMap.get(ep));
 			ep = parentMap.get(ep);
 		}
-		
+
 		System.out.println("Route: " + route.toString());
 		return(route);
 	}
 
-	
+
 	/** Find the path from start to goal using breadth first search
 	 * 
 	 * @param start The starting location
@@ -243,18 +247,18 @@ public class MapGraph {
 		Set<GeographicPoint> visitedHashSet = new HashSet<>();
 		Queue<GeographicPoint> queue = new LinkedList<>();
 		HashMap<GeographicPoint, GeographicPoint> parentMap = new HashMap<>();
-				
+
 		GeographicPoint cur = start;
 
 		queue.add(cur);
 		visitedHashSet.add(cur);
-		
+
 		int i = 0;
 		while (!queue.isEmpty()) {
 			cur = queue.remove();
 			if (null == cur) break; // Didn't find goal
 			if (cur.equals(goal)) break; // Found goal
-			
+
 			System.out.println(i++ + ":" + cur);
 			visitedHashSet.add(cur);
 			nodeSearched.accept(cur);
@@ -270,13 +274,13 @@ public class MapGraph {
 				}
 			}
 		}
-		
+
 		if (!cur.equals(goal)) {
 			return(null);
 		}
-		
+
 		System.out.println("Found goal " + goal);
-		
+
 		ArrayList<GeographicPoint> route = new ArrayList<>();
 		GeographicPoint ep = goal; 
 		route.add(0, ep);
@@ -284,7 +288,7 @@ public class MapGraph {
 			route.add(0,parentMap.get(ep));
 			ep = parentMap.get(ep);
 		}
-		
+
 		System.out.println("Route: " + route.toString());
 		return(route);
 	}
@@ -315,9 +319,50 @@ public class MapGraph {
 			GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 3
+		System.out.println(new Object(){}.getClass());
+		System.out.println(new Object(){}.getClass().getEnclosingClass());
+		System.out.println(new Object(){}.getClass().getEnclosingClass().getName());
 
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
+
+		/**
+		 *  shortest path tree set
+		 */
+		Set<GeographicPoint> sptSet = new LinkedHashSet<>();
+		Set<GeographicPoint> visitedList = new HashSet<>();
+		
+		class GeographicPointComparator implements Comparator<GeographicPoint> {
+
+			@Override
+			public int compare(GeographicPoint o1, GeographicPoint o2) {
+				if (o1.getDist() < o2.getDist()) return(-1);
+				if (o1.getDist() > o2.getDist()) return(1);
+				return(0);
+			}			
+		}
+		Comparator<GeographicPoint> gpComparator = new GeographicPointComparator();
+		PriorityQueue<GeographicPoint> pq = new PriorityQueue<>(getNumVertices(), gpComparator);
+
+		GeographicPoint cur = start;
+		cur.setDist(0.0);
+		sptSet.add(cur);
+
+		while (cur != goal) {
+			// Add neighs to the pq
+			for (Edge neighbour : mapGraph.get(new Vertex(cur))) {
+				final GeographicPoint endPoint = neighbour.getEndPoint();
+				if (sptSet.contains(endPoint)) {
+					continue;
+				}
+				
+				endPoint.setDist(cur.distance(endPoint));
+				pq.add(endPoint);
+			}
+			
+			cur = pq.poll();
+			sptSet.add(cur);
+		}
 
 		return null;
 	}
@@ -376,17 +421,17 @@ public class MapGraph {
 		GeographicPoint testStart;
 		GeographicPoint testEnd;
 
-//		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
-//		testStart = new GeographicPoint(1.0, 1.0);
-//		testEnd = new GeographicPoint(8.0, -1.0);
-//		System.out.println("Test NM using bfs");
-//		testroute = simpleTestMap.bfs(testStart,testEnd);
-		
-//		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
-//		testStart = new GeographicPoint(52.1993476,0.1273227);
-//		testEnd = new GeographicPoint(52.2019205, 0.1180646);
-//		System.out.println("Test NM using bfs");
-//		testroute = simpleTestMap.bfs(testStart,testEnd);
+		//		GraphLoader.loadRoadMap("data/testdata/simpletest.map", simpleTestMap);
+		//		testStart = new GeographicPoint(1.0, 1.0);
+		//		testEnd = new GeographicPoint(8.0, -1.0);
+		//		System.out.println("Test NM using bfs");
+		//		testroute = simpleTestMap.bfs(testStart,testEnd);
+
+		//		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
+		//		testStart = new GeographicPoint(52.1993476,0.1273227);
+		//		testEnd = new GeographicPoint(52.2019205, 0.1180646);
+		//		System.out.println("Test NM using bfs");
+		//		testroute = simpleTestMap.bfs(testStart,testEnd);
 
 		GraphLoader.loadRoadMap("data/maps/cambridge.map", simpleTestMap);
 		testStart = new GeographicPoint(52.1993476,0.1273227);
@@ -395,19 +440,19 @@ public class MapGraph {
 		testroute = simpleTestMap.dfs(testStart,testEnd);
 
 		// A very simple test using real data
-//		testStart = new GeographicPoint(32.869423, -117.220917);
-//		testEnd = new GeographicPoint(32.869255, -117.216927);
-//		System.out.println("Test 2 using utc: Dijkstra should be 13 and AStar should be 5");
-//		testroute = testMap.dijkstra(testStart,testEnd);
-//		testroute2 = testMap.aStarSearch(testStart,testEnd);
+		//		testStart = new GeographicPoint(32.869423, -117.220917);
+		//		testEnd = new GeographicPoint(32.869255, -117.216927);
+		//		System.out.println("Test 2 using utc: Dijkstra should be 13 and AStar should be 5");
+		//		testroute = testMap.dijkstra(testStart,testEnd);
+		//		testroute2 = testMap.aStarSearch(testStart,testEnd);
 
 
 		// A slightly more complex test using real data
-//		testStart = new GeographicPoint(32.8674388, -117.2190213);
-//		testEnd = new GeographicPoint(32.8697828, -117.2244506);
-//		System.out.println("Test 3 using utc: Dijkstra should be 37 and AStar should be 10");
-//		testroute = testMap.dijkstra(testStart,testEnd);
-//		testroute2 = testMap.aStarSearch(testStart,testEnd);
+		//		testStart = new GeographicPoint(32.8674388, -117.2190213);
+		//		testEnd = new GeographicPoint(32.8697828, -117.2244506);
+		//		System.out.println("Test 3 using utc: Dijkstra should be 37 and AStar should be 10");
+		//		testroute = testMap.dijkstra(testStart,testEnd);
+		//		testroute2 = testMap.aStarSearch(testStart,testEnd);
 
 
 		/* Use this code in Week 3 End of Week Quiz */

@@ -5,9 +5,12 @@ import java.awt.geom.Point2D.Double;
 @SuppressWarnings("serial")
 public class GeographicPoint extends Double {
 	
+	private double distance;
+
 	public GeographicPoint(double latitude, double longitude)
 	{
 		super(latitude, longitude);
+		setDist((double)Integer.MAX_VALUE);
 	}
 	
 	/**
@@ -57,6 +60,14 @@ public class GeographicPoint extends Double {
 		
 		GeographicPoint gp = (GeographicPoint)obj;
 		return ((this.x == gp.getX()) & (this.y == gp.getY()));
+	}
+
+	public double getDist() {
+		return distance;
+	}
+
+	public void setDist(final double dist) {
+		this.distance = dist;
 	}
 
     
