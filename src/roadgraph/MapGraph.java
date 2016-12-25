@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.org.glassfish.gmbal.ParameterNames;
+
 import geography.GeographicPoint;
 import sun.awt.image.VolatileSurfaceManager;
 import util.GraphLoader;
@@ -146,6 +148,12 @@ public class MapGraph {
 		return dfs(start, goal, temp);
 	}
 
+	/**
+	 * @param start
+	 * @param goal
+	 * @param nodeSearched
+	 * @return
+	 */
 	public List<GeographicPoint> dfs(GeographicPoint start, 
 			GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
@@ -189,7 +197,7 @@ public class MapGraph {
 				if (!visitedHashSet.contains(e.getEndPoint())) {
 					GeographicPoint endPoint = e.getEndPoint();
 					visitedHashSet.add(endPoint);
-					parentMap.put(endPoint, cur);
+					parentMap.put(endPoint, cur); // me, parent
 					stack.push(e.getEndPoint());
 				}
 				else {
@@ -201,17 +209,8 @@ public class MapGraph {
 			return(null);
 		}
 
-		System.out.println("Found goal " + goal);
-
-		ArrayList<GeographicPoint> route = new ArrayList<>();
-		GeographicPoint ep = goal; 
-		route.add(0, ep);
-		while (!parentMap.get(ep).equals(start)) {
-			route.add(0,parentMap.get(ep));
-			ep = parentMap.get(ep);
-		}
-
-		System.out.println("Route: " + route.toString());
+		System.out.println("Found goal");
+		ArrayList<GeographicPoint> route = parentMapToRoute(start, goal, parentMap);
 		return(route);
 	}
 
@@ -279,18 +278,25 @@ public class MapGraph {
 			return(null);
 		}
 
-		System.out.println("Found goal " + goal);
+		System.out.println("Found goal");
+		ArrayList<GeographicPoint> route = parentMapToRoute(start, goal, parentMap);
+		return(route);
+	}
 
+	private ArrayList<GeographicPoint> parentMapToRoute(GeographicPoint start, GeographicPoint goal,
+			HashMap<GeographicPoint, GeographicPoint> parentMap) {
 		ArrayList<GeographicPoint> route = new ArrayList<>();
-		GeographicPoint ep = goal; 
-		route.add(0, ep);
-		while (!parentMap.get(ep).equals(start)) {
-			route.add(0,parentMap.get(ep));
-			ep = parentMap.get(ep);
+		GeographicPoint gp = goal; 
+		route.add(0, gp);
+		int i = 0;
+		while (!parentMap.get(gp).equals(start)) {
+			System.out.println("Route " + i++);
+			route.add(0,parentMap.get(gp));
+			gp = parentMap.get(gp);
 		}
 
 		System.out.println("Route: " + route.toString());
-		return(route);
+		return route;
 	}
 
 	/** Find the path from start to goal using Dijkstra's algorithm
@@ -319,9 +325,6 @@ public class MapGraph {
 			GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 3
-		System.out.println(new Object(){}.getClass());
-		System.out.println(new Object(){}.getClass().getEnclosingClass());
-		System.out.println(new Object(){}.getClass().getEnclosingClass().getName());
 
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
@@ -330,25 +333,24 @@ public class MapGraph {
 		 *  shortest path tree set
 		 */
 		Set<GeographicPoint> sptSet = new LinkedHashSet<>();
-		Set<GeographicPoint> visitedList = new HashSet<>();
+		HashMap<GeographicPoint, GeographicPoint> parentMap = new HashMap<>();
 		
-		class GeographicPointComparator implements Comparator<GeographicPoint> {
-
+		Comparator<GeographicPoint> gpComparator = new Comparator<GeographicPoint>() {
 			@Override
 			public int compare(GeographicPoint o1, GeographicPoint o2) {
 				if (o1.getDist() < o2.getDist()) return(-1);
 				if (o1.getDist() > o2.getDist()) return(1);
 				return(0);
 			}			
-		}
-		Comparator<GeographicPoint> gpComparator = new GeographicPointComparator();
-		PriorityQueue<GeographicPoint> pq = new PriorityQueue<>(getNumVertices(), gpComparator);
+		};
+		PriorityQueue<GeographicPoint> pq = new PriorityQueue<GeographicPoint>(getNumVertices(), gpComparator);
 
 		GeographicPoint cur = start;
 		cur.setDist(0.0);
 		sptSet.add(cur);
+		nodeSearched.accept(cur);
 
-		while (cur != goal) {
+		while (!cur.equals(goal)) {
 			// Add neighs to the pq
 			for (Edge neighbour : mapGraph.get(new Vertex(cur))) {
 				final GeographicPoint endPoint = neighbour.getEndPoint();
@@ -356,15 +358,23 @@ public class MapGraph {
 					continue;
 				}
 				
-				endPoint.setDist(cur.distance(endPoint));
+				endPoint.setDist(cur.getDist() + cur.distance(endPoint));
 				pq.add(endPoint);
+				parentMap.put(endPoint, cur); // child, parent
 			}
-			
+
 			cur = pq.poll();
 			sptSet.add(cur);
+			nodeSearched.accept(cur);
 		}
 
-		return null;
+		if (!cur.equals(goal)) {
+			return(null);
+		}
+		
+		System.out.println("Found goal");
+		ArrayList<GeographicPoint> route = parentMapToRoute(start, goal, parentMap);
+		return(route);
 	}
 
 	/** Find the path from start to goal using A-Star search
